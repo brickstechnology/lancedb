@@ -146,6 +146,11 @@ class FTS:
     ascii_folding : bool, default True
         Whether to fold ASCII characters. This converts accented characters to
         their ASCII equivalent. For example, "café" would be converted to "cafe".
+    custom_stop_words : list of str, optional
+        Custom stop words to remove. When provided, replaces the built-in
+        stop-word list for ``language``. Only applied when ``remove_stop_words``
+        is True. Useful for tokenizers/languages without a built-in stop-word
+        list (e.g. ``base_tokenizer="icu"`` for Thai).
 
     Notes
     -----
@@ -166,6 +171,7 @@ class FTS:
     ngram_min_length: int = 3
     ngram_max_length: int = 3
     prefix_only: bool = False
+    custom_stop_words: Optional[list[str]] = None
 
 
 @dataclass

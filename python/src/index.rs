@@ -55,6 +55,7 @@ pub fn extract_index_params(source: &Option<Bound<'_, PyAny>>) -> PyResult<Lance
                     .lower_case(params.lower_case)
                     .max_token_length(params.max_token_length)
                     .remove_stop_words(params.remove_stop_words)
+                    .custom_stop_words(params.custom_stop_words)
                     .stem(params.stem)
                     .ascii_folding(params.ascii_folding)
                     .ngram_min_length(params.ngram_min_length)
@@ -207,6 +208,7 @@ struct FtsParams {
     ngram_min_length: u32,
     ngram_max_length: u32,
     prefix_only: bool,
+    custom_stop_words: Option<Vec<String>>,
 }
 
 #[derive(FromPyObject)]

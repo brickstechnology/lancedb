@@ -1,0 +1,47 @@
+name: build-custom-wheels
+
+# Manual builder for the patched lancedb wheels (ICU + custom_stop_words).
+# Produces manylinux x86_64 AND aarch64 release wheels and uploads them as
+# downloadable artifacts (no PyPI publish). Run from the Actions tab or:
+#   gh workflow run build-custom-wheels.yml --ref feat/expose-custom-stop-words
+
+on:
+  workflow_dispatch:
+    inputs:
+      python-minor-version:
+        description: "CPython minor version (10-13). abi3 wheel works across >= this."
+        required: false
+        default: "10"
+
+jobs:
+  build:
+    name: "build ${{ matrix.arch }}"
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x86_64
+            arm-build: "false"
+          - arch: aarch64
+            arm-build: "true"
+    defaults:
+      run:
+        shell: bash
+        working-directory: python
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          lfs: true
+      - uses: ./.github/workflows/build_linux_wheel
+        with:
+          python-minor-version: ${{ inputs.python-minor-version }}
+          args: "--release"
+          arm-build: ${{ matrix.arm-build }}
+      - name: Upload wheel
+        uses: actions/upload-artifact@v4
+        with:
+          name: lancedb-wheel-${{ matrix.arch }}
+          path: python/target/wheels/*.whl
+          if-no-files-found: error

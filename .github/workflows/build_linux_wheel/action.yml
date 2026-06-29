@@ -34,7 +34,10 @@ runs:
         maturin-version: "1.12.4"
         command: build
         working-directory: python
-        docker-options: "-e PIP_EXTRA_INDEX_URL='https://pypi.fury.io/lance-format/ https://pypi.fury.io/lancedb/'"
+        # Relax LTO inside the build container: the default release profile links
+        # _lancedb with `lto=fat`/`codegen-units=1`, whose peak memory SIGKILLs the
+        # runner (notably aarch64). thin LTO + parallel codegen keeps it in budget.
+        docker-options: "-e PIP_EXTRA_INDEX_URL='https://pypi.fury.io/lance-format/ https://pypi.fury.io/lancedb/' -e CARGO_PROFILE_RELEASE_LTO=thin -e CARGO_PROFILE_RELEASE_CODEGEN_UNITS=16"
         target: x86_64-unknown-linux-gnu
         manylinux: ${{ inputs.manylinux }}
         args: ${{ inputs.args }}
@@ -50,7 +53,9 @@ runs:
         maturin-version: "1.12.4"
         command: build
         working-directory: python
-        docker-options: "-e PIP_EXTRA_INDEX_URL='https://pypi.fury.io/lance-format/ https://pypi.fury.io/lancedb/'"
+        # See x86_64 note: relax LTO so the _lancedb release link fits in memory
+        # (this aarch64 link was SIGKILLed under the default fat-LTO profile).
+        docker-options: "-e PIP_EXTRA_INDEX_URL='https://pypi.fury.io/lance-format/ https://pypi.fury.io/lancedb/' -e CARGO_PROFILE_RELEASE_LTO=thin -e CARGO_PROFILE_RELEASE_CODEGEN_UNITS=16"
         target: aarch64-unknown-linux-gnu
         manylinux: ${{ inputs.manylinux }}
         args: ${{ inputs.args }}

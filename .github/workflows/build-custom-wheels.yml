@@ -49,5 +49,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: lancedb-wheel-${{ matrix.arch }}
-          path: python/target/wheels/*.whl
+          # The cargo workspace target dir (and maturin's wheel output) is at the
+          # repo root, not under python/, even though the build runs in python/.
+          path: target/wheels/*.whl
           if-no-files-found: error

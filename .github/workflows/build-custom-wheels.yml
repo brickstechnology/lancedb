@@ -16,10 +16,11 @@ on:
 jobs:
   build:
     name: "build ${{ matrix.arch }}"
-    # Build each arch on a NATIVE runner. aarch64 used to cross-compile under
-    # QEMU on an x86_64 host, which exhausted resources and failed (exit 101)
-    # ~30 min into compiling the lance/datafusion tree. GitHub-hosted ubuntu-arm
-    # runners (free for public repos) build aarch64 natively with no emulation.
+    # Build each arch on a NATIVE Blacksmith runner. aarch64 used to cross-compile
+    # under QEMU on an x86_64 host (exit 101 ~30 min in). The default release
+    # profile links _lancedb with fat LTO / codegen-units=1, whose peak memory
+    # OOMs a 4-vcpu/16 GB runner — so use the 8-vcpu/~32 GB tier (like upstream's
+    # ubuntu-2404-8x runners) and keep the full fat-LTO optimization.
     runs-on: ${{ matrix.runs-on }}
     strategy:
       fail-fast: false
@@ -27,10 +28,10 @@ jobs:
         include:
           - arch: x86_64
             arm-build: "false"
-            runs-on: ubuntu-24.04
+            runs-on: blacksmith-8vcpu-ubuntu-2404
           - arch: aarch64
             arm-build: "true"
-            runs-on: ubuntu-24.04-arm
+            runs-on: blacksmith-8vcpu-ubuntu-2404-arm
     defaults:
       run:
         shell: bash

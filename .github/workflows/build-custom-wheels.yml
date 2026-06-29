@@ -16,15 +16,21 @@ on:
 jobs:
   build:
     name: "build ${{ matrix.arch }}"
-    runs-on: ubuntu-24.04
+    # Build each arch on a NATIVE runner. aarch64 used to cross-compile under
+    # QEMU on an x86_64 host, which exhausted resources and failed (exit 101)
+    # ~30 min into compiling the lance/datafusion tree. GitHub-hosted ubuntu-arm
+    # runners (free for public repos) build aarch64 natively with no emulation.
+    runs-on: ${{ matrix.runs-on }}
     strategy:
       fail-fast: false
       matrix:
         include:
           - arch: x86_64
             arm-build: "false"
+            runs-on: ubuntu-24.04
           - arch: aarch64
             arm-build: "true"
+            runs-on: ubuntu-24.04-arm
     defaults:
       run:
         shell: bash

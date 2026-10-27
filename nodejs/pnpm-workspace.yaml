@@ -18,6 +18,7 @@ allowBuilds:
   sharp: true
 
 overrides:
+  "sharp@~0.33": "0.35.5"
   "@babel/core": "7.29.6"
   "axios": "1.20.0"
   "baseline-browser-mapping": "2.11.0"

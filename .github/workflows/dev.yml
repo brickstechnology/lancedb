@@ -29,7 +29,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: "18"
+          node-version: "22"
       # These rules are disabled because Github will always ensure there
       # is a blank line between the title and the body and Github will
       # word wrap the description field to ensure a reasonable max line
